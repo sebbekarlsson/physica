@@ -1,4 +1,5 @@
 #include <physica/collision.h>
+#include <physica/macros.h>
 #include <math.h>
 
 
@@ -28,14 +29,14 @@ static PHCollision _resolve_collision(PHEntity *a, PHEntity *b, Vec3 zero, Vec3 
   float a_ratio = 0;
 
   {
-    a_ratio = ceilf((a->mass / mass_sum));
+    a_ratio = ceilf(ONE(a->mass / mass_sum));
     Vec3 next_delta =
         VEC3_OP(a->delta_position, -, VEC3_OP_SL(a_ratio, *, impulse));
     vec3_copy(next_delta, &a->delta_position);
   }
 
   if (b->can_be_moved) {
-    float ratio = ceilf(b->mass / mass_sum);
+    float ratio = ceilf(ONE(b->mass / mass_sum));
     Vec3 next_delta =
         VEC3_OP(b->delta_position, +, VEC3_OP_SL(ratio, *, impulse));
     vec3_copy(next_delta, &b->delta_position);
@@ -79,10 +80,11 @@ void ph_resolve_collision(PHEntity *a, PHEntity *b) {
                             VEC3_OP_SR(b->position, +, b->mass))),
                    vec3_inv(normal));
   const float percent = cb.ratio;
+
   float slop = 0.01f;
   Vec3 correct = VEC3_OP(
       VEC3_OP_SR((VEC3_OP_SR(vec3_max(VEC3_OP_SR(penetration, -, slop), 0),
-                             /, (a->inv_mass + b->inv_mass))),
+                             /, (ONE(a->inv_mass + b->inv_mass)))),
                      *, percent),
           *, normal);
 
