@@ -5,8 +5,8 @@
 typedef struct PHYSICA_ENTITY_STRUCT {
   Vec3 position;
   Vec3 delta_position;
-  Vec3 velocity;
   Vec3 size;
+  Vec3 velocity;
   float restitution;
   float mass;
   float inv_mass;

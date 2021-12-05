@@ -10,7 +10,7 @@ static PHCollision _resolve_collision(PHEntity *a, PHEntity *b, Vec3 zero, Vec3 
   Vec3 rv = vec3_uninf(vec3_sub(dp, dpb));
   Vec3 normal = ph_vec3_impulse_normal(
       (PHEntity){a->position, dp, (Vec3){a->mass, a->mass, a->mass}},
-      (PHEntity){b->position, dpb, (Vec3){b->mass, b->mass, b->mass}});
+      (PHEntity){b->position, dpb, (Vec3){b->size.x, b->mass, b->size.z}});
 
   float alongNormal = vec3_dot(rv, normal);
 
@@ -92,22 +92,27 @@ void ph_resolve_collision(PHEntity *a, PHEntity *b) {
 }
 
 
-
+#include <stdio.h>
 // get normal vector of the object `b` which `a` is traveling towards.
 // to figure out which side of `b` which `a` will hit.
 Vec3 ph_vec3_impulse_normal(PHEntity a, PHEntity b) {
   Vec3 a_pos = VEC3_OP(a.position, +, a.delta_position);
   Vec3 b_pos = VEC3_OP(b.position, +, b.delta_position);
 
-  Vec3 center_a = (Vec3){ a_pos.x + a.size.x / 2, a_pos.y + a.size.y / 2, 0 };
-  Vec3 center_b = (Vec3){ b_pos.x + b.size.x / 2, b_pos.y + b.size.y / 2, 0 };
-
+  Vec3 center_a =  vec3_center(a_pos, a.size);// (Vec3){ a_pos.x + a.size.x / 2, a_pos.y + a.size.y / 2, 0 };
+  Vec3 center_b = vec3_center(b_pos, b.size);//(Vec3){ b_pos.x + b.size.x / 2, b_pos.y + b.size.y / 2, 0 };
 
   Vec3 x1 = {0, 0, 0};
   Vec3 y1 = {0, 0, 0};
 
-  if (center_a.x > center_b.x && a.delta_position.x < 0 && !(center_a.x > b_pos.x+b.size.x)) x1 = (Vec3){1, 0, 0};
-  else if (center_a.x < center_b.x && a.delta_position.x > 0) x1 = (Vec3){-1, 0, 0};
+  float left = a.position.x;
+  float right = a.position.x + a.size.x;
+
+  float b_right = b.position.x + b.size.x;
+  float b_left = b.position.x;
+
+  if (center_a.x > center_b.x && a.delta_position.x < 0 && left >= floorf(b_right)) x1 = (Vec3){1, 0, 0};
+  else if (center_a.x < center_b.x && a.delta_position.x > 0 && floorf(right) <= b_left) x1 = (Vec3){-1, 0, 0};
 
 
   if ( center_a.y > center_b.y && a.delta_position.y < 0) y1 = (Vec3){0, 1, 0};
