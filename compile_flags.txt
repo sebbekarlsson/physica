@@ -1,0 +1,3 @@
+-std=gnu99
+-I./include
+-I./build/_deps/vec_static-src/include
