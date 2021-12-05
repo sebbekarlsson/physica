@@ -20,11 +20,13 @@ static PHCollision _resolve_collision(PHEntity *a, PHEntity *b, Vec3 zero, Vec3 
 
   alongNormal = alongNormal;
 
-  float j = alongNormal;
+
+  float mass_sum = a->mass + b->mass;
+  float e = fmin(a->restitution, b->restitution);
+  float j = (-e) + alongNormal;
 
   Vec3 impulse = VEC3_OP_SL(j, *, normal);
 
-  float mass_sum = a->mass + b->mass;
 
   float a_ratio = 0;
 
@@ -67,12 +69,7 @@ void ph_resolve_collision(PHEntity *a, PHEntity *b) {
   if (ca.collision == 0 && cb.collision == 0)
     return;
 
-  if (!ph_entity_intersects(a, b))
-    return;
-
-  Vec3 normal = cb.normal; // VEC3_OP(ca.normal, + , cb.normal);
-
-  // physics_next(b);
+  Vec3 normal = cb.normal;
 
   // correct position
   Vec3 penetration =
@@ -109,9 +106,14 @@ Vec3 ph_vec3_impulse_normal(PHEntity a, PHEntity b) {
 
   float left = a.position.x;
   float right = a.position.x + a.size.x;
+  // float bottom = a.position.y;
+  float top = a.position.y + a.size.y;
+
 
   float b_right = b.position.x + b.size.x;
   float b_left = b.position.x;
+  float b_bottom = b.position.y;
+  float b_top = b.position.y + b.size.y;
 
   if (center_a.x > center_b.x && a.delta_position.x < 0 && left >= floorf(b_right)) x1 = (Vec3){1, 0, 0};
   else if (center_a.x < center_b.x && a.delta_position.x > 0 && floorf(right) <= b_left) x1 = (Vec3){-1, 0, 0};
