@@ -1,4 +1,5 @@
 -std=gnu99
 -I./include
 -I./build/_deps/vec_static-src/include
+-I./build/_deps/date_static-src/include
 -I/usr/include

@@ -9,7 +9,7 @@ file(GLOB PUBLIC_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/include/*.h)
 file(GLOB physica_sources ${CMAKE_CURRENT_SOURCE_DIR}/src/*.c)
 
 
-# add_executable(physica_e ${physica_sources})
+add_executable(physica_e ${physica_sources})
 
 list(FILTER physica_ources EXCLUDE REGEX "main.c")
 
@@ -41,14 +41,14 @@ target_include_directories(
       ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 
-#target_include_directories(
-#  physica_e
-#    PUBLIC
-#      $<INSTALL_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-#      $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
-#      $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-#      ${CMAKE_CURRENT_BINARY_DIR}/include
-#      ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_include_directories(
+  physica_e
+    PUBLIC
+      $<INSTALL_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+      $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
+      $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+      ${CMAKE_CURRENT_BINARY_DIR}/include
+      ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 include(FetchContent)
 
@@ -62,6 +62,16 @@ if (NOT TARGET vec_static)
 endif()
 
 
-target_link_libraries(physica PUBLIC vec_static)
-# target_link_libraries(physica_e PUBLIC vec_static)
-target_link_libraries(physica_static PUBLIC vec_static)
+FetchContent_Declare(
+  date_static
+  GIT_REPOSITORY git@github.com:sebbekarlsson/date.git
+  GIT_TAG "master"
+  )
+
+if (NOT TARGET date_static)
+  FetchContent_MakeAvailable(date_static)
+endif()
+
+target_link_libraries(physica PUBLIC vec_static pthread date_static)
+target_link_libraries(physica_e PUBLIC vec_static pthread date_static)
+target_link_libraries(physica_static PUBLIC vec_static pthread date_static)

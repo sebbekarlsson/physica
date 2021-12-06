@@ -27,7 +27,7 @@ unsigned int ph_entity_vs_ray(PHEntity *entity, PHRay ray) {
   return (left || right || top || bottom);
 }
 
-PHRaycastResult *ph_init_raycast_result(void *ptr, PHRay ray) {
+PHRaycastResult *ph_init_raycast_result(void *ptr, PHRay ray, PHEntity* entity) {
   PHRaycastResult *result = NEW(PHRaycastResult);
   result->ptr = ptr;
   result->ray = NEW(PHRay);
@@ -36,6 +36,7 @@ PHRaycastResult *ph_init_raycast_result(void *ptr, PHRay ray) {
   memcpy(&result->ray->start, &ray.start, sizeof(ray.start));
   memcpy(&result->ray->end, &ray.end, sizeof(ray.end));
   result->ray->distance = ray.distance;
+  result->entity = entity;
   return result;
 }
 
@@ -46,7 +47,7 @@ PHRaycastResult *ph_raycast(PHEntity **entities, uint32_t len, PHEntity *self,
     if (entity == self)
       continue;
     if (ph_entity_vs_ray(entity, ray))
-      return ph_init_raycast_result(entity, ray);
+      return ph_init_raycast_result(entity, ray, entity);
   }
 
   return 0;

@@ -107,13 +107,13 @@ Vec3 ph_vec3_impulse_normal(PHEntity a, PHEntity b) {
   float left = a.position.x;
   float right = a.position.x + a.size.x;
   // float bottom = a.position.y;
-  float top = a.position.y + a.size.y;
+  //float top = a.position.y + a.size.y;
 
 
   float b_right = b.position.x + b.size.x;
   float b_left = b.position.x;
-  float b_bottom = b.position.y;
-  float b_top = b.position.y + b.size.y;
+  //float b_bottom = b.position.y;
+  //float b_top = b.position.y + b.size.y;
 
   if (center_a.x > center_b.x && a.delta_position.x < 0 && left >= floorf(b_right)) x1 = (Vec3){1, 0, 0};
   else if (center_a.x < center_b.x && a.delta_position.x > 0 && floorf(right) <= b_left) x1 = (Vec3){-1, 0, 0};
